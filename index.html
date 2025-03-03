@@ -3,76 +3,65 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sondage - Partagez votre opinion !</title>
+  <title>Sondage</title>
   
-  <!-- Inclure Firebase via les CDN -->
+  <!-- Ajoute le SDK Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
-
+  
   <script>
-    // Configuration Firebase - Remplace ces valeurs par les tiennes
+    // Configuration de Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyDlXzH5rrIlxgsfEmyWee9BiMkW9D9sfH8",
       authDomain: "nemi-bd221.firebaseapp.com",
-      databaseURL: "https://nemi-bd221-default-rtdb.europe-west1.firebasedatabase.app", // Remplace par ton URL de base de données Firebase
+      databaseURL: "https://nemi-bd221-default-rtdb.europe-west1.firebasedatabase.app",
       projectId: "nemi-bd221",
       storageBucket: "nemi-bd221.firebasestorage.app",
       messagingSenderId: "320801299755",
-      appId: "1:320801299755:web:c072c29c77d840b38d396e"
+      appId: "1:320801299755:web:c072c29c77d840b38d396e",
+      measurementId: "G-LJ28TB7ZXN"
     };
 
-    // Initialisation de Firebase
+    // Initialiser Firebase
     const app = firebase.initializeApp(firebaseConfig);
-    const database = firebase.database(app);
+    const database = firebase.database();
   </script>
 </head>
 <body>
-  <h1>Sondage - Partagez votre opinion !</h1>
 
-  <form id="surveyForm">
-    <label for="question1">1. Quel est votre film préféré ?</label><br>
-    <input type="text" id="question1" name="question1" required><br><br>
+<!-- Formulaire pour entrer les réponses -->
+<form id="sondageForm">
+  <label for="question1">Réponse à la question 1:</label>
+  <input type="text" id="question1" name="question1" required><br><br>
+  
+  <label for="question2">Réponse à la question 2:</label>
+  <input type="text" id="question2" name="question2" required><br><br>
+  
+  <input type="submit" value="Envoyer">
+</form>
 
-    <label for="question2">2. Avez-vous déjà utilisé notre produit ?</label><br>
-    <select id="question2" name="question2" required>
-      <option value="oui">Oui</option>
-      <option value="non">Non</option>
-    </select><br><br>
+<script>
+  // Fonction pour envoyer les données dans Firebase Realtime Database
+  document.getElementById('sondageForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Empêche l'envoi traditionnel du formulaire
 
-    <label for="question3">3. Comment évaluez-vous notre service ?</label><br>
-    <input type="range" id="question3" name="question3" min="1" max="5" required><br><br>
+    const question1 = document.getElementById('question1').value;
+    const question2 = document.getElementById('question2').value;
 
-    <button type="submit">Envoyer mes réponses</button>
-  </form>
-
-  <script>
-    // Ajouter un événement au formulaire
-    document.getElementById('surveyForm').addEventListener('submit', function(event) {
-      event.preventDefault();  // Empêcher le formulaire de se soumettre normalement
-
-      // Récupérer les réponses
-      const question1 = document.getElementById('question1').value;
-      const question2 = document.getElementById('question2').value;
-      const question3 = document.getElementById('question3').value;
-
-      // Créer un objet pour les réponses
-      const responses = {
-        question1: question1,
-        question2: question2,
-        question3: question3
-      };
-
-      // Ajouter les réponses à Firebase Realtime Database
-      const newRef = database.ref('responses').push();  // "responses" est le nœud de la base de données
-      newRef.set(responses)
-        .then(() => {
-          alert('Merci pour vos réponses !');
-          window.location.href = 'confirmation.html';  // Redirection vers la page de confirmation
-        })
-        .catch((error) => {
-          console.error('Erreur lors de l\'envoi des données : ', error);
-        });
+    // Ajouter les données dans la base de données Firebase
+    const newResponseRef = database.ref('responses').push();
+    newResponseRef.set({
+      question1: question1,
+      question2: question2
+    })
+    .then(() => {
+      alert('Réponse envoyée avec succès !');
+    })
+    .catch((error) => {
+      alert('Erreur : ' + error.message);
     });
-  </script>
+  });
+</script>
+
 </body>
 </html>
